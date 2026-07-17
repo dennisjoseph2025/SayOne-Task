@@ -1,6 +1,12 @@
 import statistics
 from datetime import datetime, timedelta
 
+from groq import Groq
+
+from django.conf import settings
+
+from .models import SleepEntry, SleepGoal
+
 # Tolerance constants for streak calculation
 BED_TIME_TOLERANCE_MINUTES = 15
 DURATION_TOLERANCE_HOURS = 0.5
@@ -109,3 +115,79 @@ def compute_streaks(entries, goal):
         "weekly_score": weekly_score,
         "goal_met_last_7_nights": last_7,
     }
+
+
+AI_LOOKBACK_NIGHTS = 14
+MIN_NIGHTS_FOR_RECOMMENDATION = 3
+
+SYSTEM_PROMPT = (
+    "You are a sleep hygiene assistant analyzing a user's personal sleep log. "
+    "You will be given a list of recent nights with bed time, wake time, sleep quality (1-5), "
+    "free-text notes, and lifestyle factors (caffeine timing, exercise, screen time before bed). "
+    "Identify concrete patterns connecting these factors to sleep quality. "
+    "Then provide one specific, actionable recommendation in 2-4 sentences. "
+    "Reference the user's actual data (e.g., specific factors or dates) rather than giving generic sleep advice. "
+    "Do not invent information not present in the data. "
+    "Maintain a supportive, non-clinical tone. "
+    "If the data is insufficient to identify a pattern, say so honestly rather than guessing."
+)
+
+
+def generate_recommendation(user):
+    """Generate an AI sleep recommendation based on the user's recent entries."""
+    entries = list(
+        SleepEntry.objects.filter(user=user)
+        .order_by("-date")[:AI_LOOKBACK_NIGHTS]
+    )
+
+    if len(entries) < MIN_NIGHTS_FOR_RECOMMENDATION:
+        return (
+            f"You've logged {len(entries)} night(s) so far. "
+            f"Log at least {MIN_NIGHTS_FOR_RECOMMENDATION} nights to get a personalized recommendation."
+        )
+
+    goal = SleepGoal.objects.filter(user=user).first()
+
+    nights_text = ""
+    for e in reversed(entries):
+        nights_text += (
+            f"- Date: {e.date}, Bed: {e.bed_time.strftime('%H:%M')}, "
+            f"Wake: {e.wake_time.strftime('%H:%M')}, Duration: {e.duration_hours}h, "
+            f"Quality: {e.quality}/5, Caffeine: {e.caffeine}, "
+            f"Exercise: {'yes' if e.exercise else 'no'}, "
+            f"Screen before bed: {'yes' if e.screen_time_before_bed else 'no'}"
+        )
+        if e.notes:
+            nights_text += f", Notes: {e.notes}"
+        nights_text += "\n"
+
+    goal_text = ""
+    if goal:
+        goal_text = (
+            f"\nUser's sleep goal: bed by {goal.target_bed_time.strftime('%H:%M')}, "
+            f"wake at {goal.target_wake_time.strftime('%H:%M')}, "
+            f"target {goal.target_duration_hours}h sleep.\n"
+        )
+
+    user_message = (
+        f"Here are my recent nights:\n{nights_text}"
+        f"{goal_text}"
+        f"Based on this data, what pattern do you notice, and what is your recommendation?"
+    )
+
+    api_key = settings.GROQ_API_KEY
+    if not api_key:
+        return "AI recommendation is not configured. Set the GROQ_API_KEY environment variable."
+
+    client = Groq(api_key=api_key)
+    response = client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_message},
+        ],
+        max_tokens=256,
+        temperature=0.7,
+    )
+
+    return response.choices[0].message.content

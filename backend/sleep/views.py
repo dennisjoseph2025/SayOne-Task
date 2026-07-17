@@ -73,6 +73,13 @@ class SleepEntryViewSet(viewsets.ModelViewSet):
         data = compute_analytics(entries)
         return Response(data)
 
+    @action(detail=False, methods=["post"])
+    def recommend(self, request):
+        from .services import generate_recommendation
+
+        recommendation = generate_recommendation(request.user)
+        return Response({"recommendation": recommendation})
+
 
 class SleepGoalViewSet(viewsets.ModelViewSet):
     serializer_class = SleepGoalSerializer
