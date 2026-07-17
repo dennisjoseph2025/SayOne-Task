@@ -1,0 +1,280 @@
+{
+  "info": {
+    "name": "SleepSync API",
+    "description": "Sleep-tracking assistant API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"StrongPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register", ""]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"StrongPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login", ""]
+            },
+            "description": "Copy the returned token into the collection variable 'token'"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sleep Entries",
+      "item": [
+        {
+          "name": "List Entries",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/sleep-entries/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-entries", ""]
+            }
+          }
+        },
+        {
+          "name": "List Entries (filtered)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/sleep-entries/?start_date=2026-07-01&end_date=2026-07-17",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-entries", ""],
+              "query": [
+                { "key": "start_date", "value": "2026-07-01" },
+                { "key": "end_date", "value": "2026-07-17" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-07-17\",\n  \"bed_time\": \"2026-07-17T23:15:00\",\n  \"wake_time\": \"2026-07-18T06:45:00\",\n  \"quality\": 4,\n  \"notes\": \"Woke up once around 3am, otherwise fine.\",\n  \"caffeine\": \"MORNING\",\n  \"exercise\": true,\n  \"screen_time_before_bed\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/sleep-entries/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-entries", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Entry",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/sleep-entries/1/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-entries", "1", ""]
+            }
+          }
+        },
+        {
+          "name": "Update Entry",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quality\": 5,\n  \"notes\": \"Great sleep!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/sleep-entries/1/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-entries", "1", ""]
+            }
+          }
+        },
+        {
+          "name": "Delete Entry",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/sleep-entries/1/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-entries", "1", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Analytics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/sleep-entries/analytics/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-entries", "analytics", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sleep Goals",
+      "item": [
+        {
+          "name": "Get Goal",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/sleep-goals/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-goals", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Goal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_bed_time\": \"23:30:00\",\n  \"target_wake_time\": \"07:00:00\",\n  \"target_duration_hours\": 7.5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/sleep-goals/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-goals", ""]
+            }
+          }
+        },
+        {
+          "name": "Update Goal",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_duration_hours\": 8.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/sleep-goals/1/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-goals", "1", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Streak",
+      "item": [
+        {
+          "name": "Get Streak",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/sleep-goals/streak/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-goals", "streak", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Get Recommendation",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/sleep-entries/recommend/",
+              "host": ["{{base_url}}"],
+              "path": ["sleep-entries", "recommend", ""]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
