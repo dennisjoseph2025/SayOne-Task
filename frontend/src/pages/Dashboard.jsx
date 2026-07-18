@@ -38,7 +38,7 @@ export default function Dashboard() {
     }));
 
   return (
-    <div className="page dashboard">
+    <div className="page page-wide dashboard">
       <h1>Dashboard</h1>
 
       {!hasData && <p>No sleep data yet. <a href="/log">Log a night</a> to see analytics.</p>}

@@ -25,10 +25,10 @@ function NavBar() {
             <Link to="/log">Log</Link>
             <Link to="/history">History</Link>
             <Link to="/timeline">Timeline</Link>
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/goal">Goal</Link>
-            <Link to="/recommend">Recommend</Link>
+            <Link to="/dashboard">Stats</Link>
             <Link to="/trends">Trends</Link>
+            <Link to="/goal">Goal</Link>
+            <Link to="/recommend">AI</Link>
             <Link to="/export">Export</Link>
             <Link to="/import">Import</Link>
             <span className="nav-user">{user.username}</span>
@@ -45,6 +45,35 @@ function NavBar() {
   );
 }
 
+function Home() {
+  return (
+    <div className="page home">
+      <div className="home-content">
+        <h1>SleepSync</h1>
+        <p className="home-tagline">Track your sleep. Build better habits.</p>
+        <div className="home-features">
+          <div className="home-feature">
+            <div className="home-feature-icon">🌙</div>
+            <h3>Log Sleep</h3>
+            <p>Record bed time, wake time, quality, and lifestyle factors</p>
+          </div>
+          <div className="home-feature">
+            <div className="home-feature-icon">📊</div>
+            <h3>Analytics</h3>
+            <p>Charts, streaks, consistency scores, and trend analysis</p>
+          </div>
+          <div className="home-feature">
+            <div className="home-feature-icon">🤖</div>
+            <h3>AI Insights</h3>
+            <p>Personalized recommendations and optimal wind-down times</p>
+          </div>
+        </div>
+        <Link to="/register" className="home-cta">Get Started</Link>
+      </div>
+    </div>
+  );
+}
+
 function AppRoutes() {
   const { user, loading } = useAuth();
 
@@ -52,7 +81,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<div className="page"><h1>SleepSync</h1><p>Track your sleep, improve your life.</p></div>} />
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/log" element={user ? <SleepLogForm /> : <Login />} />

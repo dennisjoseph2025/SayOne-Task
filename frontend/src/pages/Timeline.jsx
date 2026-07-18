@@ -19,7 +19,7 @@ export default function Timeline() {
   const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
 
   return (
-    <div className="page timeline-page">
+    <div className="page page-wide timeline-page">
       <h1>Sleep Timeline</h1>
       <div className="timeline">
         {sorted.map((entry) => {
