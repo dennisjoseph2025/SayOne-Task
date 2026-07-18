@@ -4,6 +4,8 @@ import SleepLogForm from "./pages/SleepLogForm";
 import SleepHistory from "./pages/SleepHistory";
 import Dashboard from "./pages/Dashboard";
 import Recommendations from "./pages/Recommendations";
+import GoalForm from "./pages/GoalForm";
+import Timeline from "./pages/Timeline";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import "./App.css";
@@ -19,7 +21,9 @@ function NavBar() {
           <>
             <Link to="/log">Log</Link>
             <Link to="/history">History</Link>
+            <Link to="/timeline">Timeline</Link>
             <Link to="/dashboard">Dashboard</Link>
+            <Link to="/goal">Goal</Link>
             <Link to="/recommend">Recommend</Link>
             <span className="nav-user">{user.username}</span>
             <button className="nav-logout" onClick={logout}>Logout</button>
@@ -47,7 +51,9 @@ function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/log" element={user ? <SleepLogForm /> : <Login />} />
       <Route path="/history" element={user ? <SleepHistory /> : <Login />} />
+      <Route path="/timeline" element={user ? <Timeline /> : <Login />} />
       <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
+      <Route path="/goal" element={user ? <GoalForm /> : <Login />} />
       <Route path="/recommend" element={user ? <Recommendations /> : <Login />} />
     </Routes>
   );
