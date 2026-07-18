@@ -30,6 +30,12 @@ class SleepEntrySerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data["wake_time"] <= data["bed_time"]:
             raise serializers.ValidationError("wake_time must be after bed_time.")
+        if self.instance is None:
+            user = self.context["request"].user
+            if SleepEntry.objects.filter(user=user, date=data["date"]).exists():
+                raise serializers.ValidationError(
+                    {"date": "An entry for this date already exists."}
+                )
         return data
 
 

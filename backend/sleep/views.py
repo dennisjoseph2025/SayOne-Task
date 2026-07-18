@@ -1,7 +1,10 @@
+import logging
+
 from django.contrib.auth.models import User
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,6 +17,8 @@ from .serializers import (
     SleepEntrySerializer,
     SleepGoalSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class RegisterView(APIView):
@@ -48,17 +53,16 @@ class SleepEntryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwner]
 
     def get_queryset(self):
-        qs = SleepEntry.objects.filter(user=self.request.user)
-        start_date = self.request.query_params.get("start_date")
-        end_date = self.request.query_params.get("end_date")
-        if start_date:
-            qs = qs.filter(date__gte=start_date)
-        if end_date:
-            qs = qs.filter(date__lte=end_date)
-        return qs
+        return SleepEntry.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            raise PermissionDenied("You do not have access to this entry.")
+        return obj
 
     @action(detail=False, methods=["get"])
     def analytics(self, request):
@@ -70,14 +74,28 @@ class SleepEntryViewSet(viewsets.ModelViewSet):
                 {"detail": "No sleep entries found."},
                 status=status.HTTP_200_OK,
             )
-        data = compute_analytics(entries)
+        try:
+            data = compute_analytics(entries)
+        except Exception as e:
+            logger.exception("Error computing analytics")
+            return Response(
+                {"detail": "Failed to compute analytics."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         return Response(data)
 
     @action(detail=False, methods=["post"])
     def recommend(self, request):
         from .services import generate_recommendation
 
-        recommendation = generate_recommendation(request.user)
+        try:
+            recommendation = generate_recommendation(request.user)
+        except Exception as e:
+            logger.exception("Error generating AI recommendation")
+            return Response(
+                {"detail": "Failed to generate recommendation. Please try again later."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
         return Response({"recommendation": recommendation})
 
 
@@ -91,6 +109,12 @@ class SleepGoalViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            raise PermissionDenied("You do not have access to this goal.")
+        return obj
+
     @action(detail=False, methods=["get"])
     def streak(self, request):
         from .services import compute_streaks
@@ -102,5 +126,12 @@ class SleepGoalViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_200_OK,
             )
         entries = SleepEntry.objects.filter(user=request.user).order_by("date")
-        data = compute_streaks(entries, goal)
+        try:
+            data = compute_streaks(entries, goal)
+        except Exception as e:
+            logger.exception("Error computing streaks")
+            return Response(
+                {"detail": "Failed to compute streaks."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         return Response(data)
