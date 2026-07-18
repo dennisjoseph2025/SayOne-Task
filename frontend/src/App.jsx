@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import SleepLogForm from "./pages/SleepLogForm";
 import SleepHistory from "./pages/SleepHistory";
 import Dashboard from "./pages/Dashboard";
+import Recommendations from "./pages/Recommendations";
 import "./App.css";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Link to="/log">Log</Link>
           <Link to="/history">History</Link>
           <Link to="/dashboard">Dashboard</Link>
+          <Link to="/recommend">Recommend</Link>
         </div>
       </nav>
       <Routes>
@@ -20,6 +22,7 @@ function App() {
         <Route path="/log" element={<SleepLogForm />} />
         <Route path="/history" element={<SleepHistory />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/recommend" element={<Recommendations />} />
       </Routes>
     </BrowserRouter>
   );
