@@ -36,7 +36,7 @@ export default function Login() {
         </label>
         <label>
           Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
         </label>
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}

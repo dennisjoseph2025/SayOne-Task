@@ -9,8 +9,8 @@ export default function ExportPDF() {
   const [period, setPeriod] = useState("week");
 
   useEffect(() => {
-    api.get("/sleep-entries/")
-      .then((res) => setEntries(res.data))
+    api.get("/sleep-entries/?page_size=500")
+      .then((res) => setEntries(res.data.results || res.data || []))
       .finally(() => setLoading(false));
   }, []);
 

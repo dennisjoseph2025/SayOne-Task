@@ -10,9 +10,9 @@ export default function SleepLogForm() {
     wake_time: "",
     quality: 3,
     notes: "",
-    caffeine: false,
+    caffeine: "NONE",
     exercise: false,
-    screen_time_before_bed: 0,
+    screen_time_before_bed: false,
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -30,14 +30,29 @@ export default function SleepLogForm() {
     setError(null);
     setLoading(true);
     try {
-      await api.post("/sleep-entries/", form);
+      const payload = {
+        ...form,
+        quality: Number(form.quality),
+        bed_time: form.bed_time.length === 16 ? form.bed_time + ":00" : form.bed_time,
+        wake_time: form.wake_time.length === 16 ? form.wake_time + ":00" : form.wake_time,
+      };
+      await api.post("/sleep-entries/", payload);
       navigate("/history");
     } catch (err) {
       const data = err.response?.data;
-      if (data?.date) setError(data.date);
-      else if (data?.non_field_errors) setError(data.non_field_errors);
-      else if (typeof data === "string") setError(data);
-      else setError("Something went wrong. Please check your input.");
+      if (data) {
+        const firstKey = Object.keys(data)[0];
+        if (firstKey) {
+          const val = data[firstKey];
+          setError(Array.isArray(val) ? val[0] : val);
+        } else if (data.detail) {
+          setError(data.detail);
+        } else {
+          setError("Something went wrong. Please check your input.");
+        }
+      } else {
+        setError("Something went wrong. Please check your input.");
+      }
     } finally {
       setLoading(false);
     }
@@ -66,17 +81,22 @@ export default function SleepLogForm() {
           <span>{form.quality}</span>
         </label>
         <label>
-          Screen Time Before Bed (min)
-          <input type="number" name="screen_time_before_bed" min="0" value={form.screen_time_before_bed} onChange={handleChange} />
+          Caffeine
+          <select name="caffeine" value={form.caffeine} onChange={handleChange}>
+            <option value="NONE">None</option>
+            <option value="MORNING">Morning</option>
+            <option value="AFTERNOON">Afternoon</option>
+            <option value="EVENING">Evening</option>
+          </select>
         </label>
         <div className="checkbox-row">
           <label>
-            <input type="checkbox" name="caffeine" checked={form.caffeine} onChange={handleChange} />
-            Caffeine
-          </label>
-          <label>
             <input type="checkbox" name="exercise" checked={form.exercise} onChange={handleChange} />
             Exercise
+          </label>
+          <label>
+            <input type="checkbox" name="screen_time_before_bed" checked={form.screen_time_before_bed} onChange={handleChange} />
+            Screen time before bed
           </label>
         </div>
         <label>

@@ -39,7 +39,7 @@ export default function Register() {
         </label>
         <label>
           Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" />
         </label>
         <button type="submit" disabled={loading}>
           {loading ? "Creating account..." : "Register"}

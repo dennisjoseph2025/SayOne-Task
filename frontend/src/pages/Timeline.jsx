@@ -5,28 +5,33 @@ import "./Timeline.css";
 export default function Timeline() {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
-    api.get("/sleep-entries/")
-      .then((res) => setEntries(res.data))
+    setLoading(true);
+    api.get(`/sleep-entries/?page=${page}`)
+      .then((res) => {
+        setEntries(res.data.results);
+        setCount(res.data.count);
+        setTotalPages(Math.ceil(res.data.count / 10));
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [page]);
 
   if (loading) return <p className="page">Loading timeline...</p>;
-  if (entries.length === 0) return <p className="page">No entries yet.</p>;
-
-  const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
+  if (entries.length === 0 && page === 1) return <p className="page">No entries yet.</p>;
 
   return (
     <div className="page page-wide timeline-page">
       <h1>Sleep Timeline</h1>
       <div className="timeline">
-        {sorted.map((entry) => {
+        {entries.map((entry) => {
           const bed = new Date(entry.bed_time);
           const wake = new Date(entry.wake_time);
           const bedHour = bed.getHours() + bed.getMinutes() / 60;
-          const wakeHour = wake.getHours() + wake.getMinutes() / 60;
           const left = ((bedHour + (bedHour < 12 ? 24 : 0) - 18) % 24) * (100 / 24);
           const width = entry.duration_hours * (100 / 24);
           const qualityColors = ["", "#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6"];
@@ -64,6 +69,30 @@ export default function Timeline() {
         <span><i style={{ backgroundColor: "#22c55e" }} /> 4</span>
         <span><i style={{ backgroundColor: "#3b82f6" }} /> 5</span>
       </div>
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+            ‹ Prev
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              className={p === page ? "active" : ""}
+              onClick={() => setPage(p)}
+            >
+              {p}
+            </button>
+          ))}
+          <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+            Next ›
+          </button>
+        </div>
+      )}
+      {count > 0 && (
+        <p className="pagination-info">
+          Page {page} of {totalPages} — {count} total entries
+        </p>
+      )}
     </div>
   );
 }

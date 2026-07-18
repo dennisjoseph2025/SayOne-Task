@@ -350,7 +350,8 @@ class SleepEntryAPITest(TestCase):
         )
         response = self.client.get("/api/sleep-entries/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(len(response.data["results"]), 1)
 
     def test_delete_entry(self):
         entry = SleepEntry.objects.create(

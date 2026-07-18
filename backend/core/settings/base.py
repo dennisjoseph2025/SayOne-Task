@@ -69,11 +69,12 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
         "sleep.authentication.BearerTokenAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    "DEFAULT_PAGINATION_CLASS": "sleep.pagination.StandardPagination",
+    "PAGE_SIZE": 10,
 }
 
 GROQ_API_KEY = env("GROQ_API_KEY", default="")

@@ -92,23 +92,37 @@ class SleepEntryViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"])
     def recommend(self, request):
         from .services import generate_recommendation
+        from groq import APIStatusError, AuthenticationError, PermissionDeniedError
 
         try:
             recommendation = generate_recommendation(request.user)
+        except (APIStatusError, AuthenticationError, PermissionDeniedError) as e:
+            logger.warning("Groq API error: %s", e)
+            return Response(
+                {"detail": "AI service is currently unavailable. Please check the API key configuration."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
         except Exception as e:
             logger.exception("Error generating AI recommendation")
             return Response(
                 {"detail": "Failed to generate recommendation. Please try again later."},
-                status=status.HTTP_502_BAD_GATEWAY,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
         return Response({"recommendation": recommendation})
 
     @action(detail=False, methods=["get"])
     def trends(self, request):
         from .services import analyze_trends
+        from groq import APIStatusError, AuthenticationError, PermissionDeniedError
 
         try:
             data = analyze_trends(request.user)
+        except (APIStatusError, AuthenticationError, PermissionDeniedError) as e:
+            logger.warning("Groq API error in trends: %s", e)
+            return Response(
+                {"detail": "AI trend analysis is currently unavailable. Please check the API key configuration."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
         except Exception:
             logger.exception("Error analyzing trends")
             return Response(
@@ -225,7 +239,7 @@ class SleepEntryViewSet(viewsets.ModelViewSet):
             bed = datetime.combine(d, datetime.min.time().replace(hour=hour, minute=minute))
             duration = random.uniform(5.5, 9.0)
             wake = bed + timedelta(hours=duration)
-            quality = random.choices([1, 2, 3, 4, 5], weights=[5, 10, 30, 35, 20])[0]
+            quality = random.choices([1, 2, 3, 4, 5], weights=[10, 15, 25, 30, 20])[0]
             caffeine = random.choice(["NONE", "NONE", "MORNING", "AFTERNOON", "EVENING"])
             exercise = random.choice([True, False, False])
             screen = random.choice([True, True, False])

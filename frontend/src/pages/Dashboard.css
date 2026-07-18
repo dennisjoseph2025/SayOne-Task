@@ -8,34 +8,66 @@
 .stat-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.1rem 1rem;
+  border-radius: 14px;
+  padding: 1.2rem 1rem;
   text-align: center;
-  box-shadow: var(--shadow);
-  transition: all 0.25s;
+  transition: all 0.3s;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  align-items: center;
+  gap: 0.25rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), #a78bfa);
 }
 
 .stat-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--shadow-glow);
   transform: translateY(-2px);
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--accent-light);
+  color: var(--accent);
+  margin-bottom: 0.3rem;
 }
 
 .stat-value {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--text-heading);
+  letter-spacing: -0.03em;
 }
 
 .stat-label {
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-secondary);
+}
+
+.stat-hint {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 .best-worst {
@@ -48,10 +80,10 @@
 .bw-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 1.1rem 1.25rem;
-  box-shadow: var(--shadow);
-  transition: all 0.2s;
+  transition: all 0.25s;
+  box-shadow: var(--shadow-sm);
 }
 
 .bw-card:hover {
@@ -59,26 +91,33 @@
 }
 
 .bw-card h3 {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+  color: var(--accent);
   margin-bottom: 0.5rem;
 }
 
-.bw-card p {
-  margin: 0.2rem 0;
+.bw-date {
   font-size: 0.9rem;
+  font-weight: 600;
   color: var(--text-heading);
+  margin: 0.2rem 0;
+}
+
+.bw-detail {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0.15rem 0;
 }
 
 .chart-container {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 1.25rem;
   margin-bottom: 1.25rem;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
 }
 
 @media (max-width: 700px) {
