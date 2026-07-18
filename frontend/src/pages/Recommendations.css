@@ -1,4 +1,18 @@
-.recommendation-card {
+.recommendations h1 {
+  margin-bottom: 0.25rem;
+}
+
+.recommendations .subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+}
+
+.recommendations button {
+  margin-bottom: 1.25rem;
+}
+
+.rec-card {
   background: linear-gradient(135deg, var(--accent-light) 0%, #faf5ff 100%);
   border: 1px solid var(--accent-border);
   border-radius: 12px;
@@ -7,12 +21,13 @@
   line-height: 1.7;
 }
 
-.recommendation-card p {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-  color: var(--text);
+.rec-card h3 {
+  margin-bottom: 0.5rem;
+  color: var(--accent);
 }
 
-.recommendation-card strong {
-  color: var(--text-heading);
+.rec-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
 }

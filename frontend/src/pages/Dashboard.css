@@ -1,4 +1,4 @@
-.stat-grid {
+.stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
@@ -13,6 +13,9 @@
   text-align: center;
   box-shadow: var(--shadow);
   transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 .stat-card:hover {
@@ -20,35 +23,56 @@
   transform: translateY(-2px);
 }
 
-.stat-card-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-secondary);
-  margin-bottom: 0.4rem;
-}
-
-.stat-card-value {
+.stat-value {
   font-size: 1.5rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--text-heading);
 }
 
-.stat-card-value.accent {
-  color: var(--accent);
+.stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
 }
 
-.stat-card-value.danger {
-  color: var(--danger);
+.best-worst {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
 }
 
-.stat-card-value.success {
-  color: var(--success);
+.bw-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
 }
 
-.chart-card {
+.bw-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.bw-card h3 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.bw-card p {
+  margin: 0.2rem 0;
+  font-size: 0.9rem;
+  color: var(--text-heading);
+}
+
+.chart-container {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -57,12 +81,11 @@
   box-shadow: var(--shadow);
 }
 
-.chart-card h2 {
-  margin-bottom: 1rem;
-}
-
 @media (max-width: 700px) {
-  .stat-grid {
+  .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .best-worst {
+    grid-template-columns: 1fr;
   }
 }

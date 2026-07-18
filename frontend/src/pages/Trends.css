@@ -1,3 +1,13 @@
+.trends h1 {
+  margin-bottom: 0.5rem;
+}
+
+.trends-note {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
 .insight-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -12,58 +22,71 @@
   box-shadow: var(--shadow-md);
 }
 
-.insight-card h2 {
-  margin-bottom: 0.75rem;
+.insight-card h3 {
+  margin-bottom: 0.5rem;
 }
 
-.insight-title {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text-heading);
-  margin-bottom: 0.25rem;
+.insight-card ul {
+  margin: 0;
+  padding-left: 1.25rem;
 }
 
-.insight-text {
+.insight-card li {
   font-size: 0.85rem;
   color: var(--text-secondary);
+  margin-bottom: 0.3rem;
   line-height: 1.5;
 }
 
-.impact-positive {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.15rem 0.5rem;
-  background: var(--success-light);
-  border: 1px solid #a7f3d0;
-  border-radius: 99px;
-  color: #065f46;
-  margin-top: 0.5rem;
-}
-
-.impact-negative {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.15rem 0.5rem;
-  background: var(--danger-light);
-  border: 1px solid #fecaca;
-  border-radius: 99px;
-  color: #991b1b;
-  margin-top: 0.5rem;
-}
-
-.wind-down-card {
+.insight-card.wind-down {
   background: linear-gradient(135deg, var(--accent-light) 0%, #faf5ff 100%);
   border: 1px solid var(--accent-border);
-  border-radius: 12px;
-  padding: 1.25rem;
-  margin-top: 1.25rem;
-  box-shadow: var(--shadow);
 }
 
-.wind-down-time {
-  font-size: 1.6rem;
+.big-value {
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.corr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.corr-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.corr-factor {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-heading);
+}
+
+.corr-impact {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+}
+
+.corr-impact.positive {
+  background: var(--success-light);
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.corr-impact.negative {
+  background: var(--danger-light);
+  border: 1px solid #fecaca;
+  color: #991b1b;
 }
