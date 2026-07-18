@@ -8,6 +8,7 @@ import GoalForm from "./pages/GoalForm";
 import Timeline from "./pages/Timeline";
 import Trends from "./pages/Trends";
 import ExportPDF from "./pages/ExportPDF";
+import WearableImport from "./pages/WearableImport";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import "./App.css";
@@ -29,6 +30,7 @@ function NavBar() {
             <Link to="/recommend">Recommend</Link>
             <Link to="/trends">Trends</Link>
             <Link to="/export">Export</Link>
+            <Link to="/import">Import</Link>
             <span className="nav-user">{user.username}</span>
             <button className="nav-logout" onClick={logout}>Logout</button>
           </>
@@ -61,6 +63,7 @@ function AppRoutes() {
       <Route path="/recommend" element={user ? <Recommendations /> : <Login />} />
       <Route path="/trends" element={user ? <Trends /> : <Login />} />
       <Route path="/export" element={user ? <ExportPDF /> : <Login />} />
+      <Route path="/import" element={user ? <WearableImport /> : <Login />} />
     </Routes>
   );
 }
