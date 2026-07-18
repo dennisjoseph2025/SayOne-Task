@@ -15,9 +15,13 @@ export default function Recommendations() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.post("/sleep-entries/generate_recommendations/");
-      setRecommendations(res.data.recommendations || []);
-      setSummary(res.data.summary || "");
+      const res = await api.post("/sleep-entries/recommend/");
+      const rec = res.data.recommendation || "";
+      if (rec) {
+        const parts = rec.split(/\n\n+/).filter(Boolean);
+        setRecommendations(parts.length > 1 ? parts.slice(1) : [rec]);
+        setSummary(parts[0] || "");
+      }
       setWindDown(res.data.wind_down_suggestion || null);
       setLoaded(true);
     } catch (e) {
