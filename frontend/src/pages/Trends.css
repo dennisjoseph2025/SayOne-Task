@@ -1,0 +1,88 @@
+.trends h1 {
+  margin-bottom: 1.5rem;
+}
+
+.trends-note {
+  color: var(--text);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.insight-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.insight-card h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.insight-card ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.insight-card li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  color: var(--text-h);
+}
+
+.wind-down {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.big-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0.5rem 0;
+}
+
+.wind-down p {
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.corr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.corr-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.corr-factor {
+  color: var(--text-h);
+}
+
+.corr-impact {
+  font-size: 0.8rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+.corr-impact.positive {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.corr-impact.negative {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.corr-impact.mixed {
+  background: #fef3c7;
+  color: #92400e;
+}

@@ -191,3 +191,142 @@ def generate_recommendation(user):
     )
 
     return response.choices[0].message.content
+
+
+TREND_LOOKBACK_NIGHTS = 21
+MIN_NIGHTS_FOR_TRENDS = 5
+
+TREND_SYSTEM_PROMPT = (
+    "You are a sleep data analyst. Analyze the user's sleep log entries "
+    "and identify trends and patterns. Focus on: "
+    "1) How caffeine, exercise, and screen time correlate with sleep quality. "
+    "2) Mood or sleep-affecting factors mentioned in notes. "
+    "3) Day-of-week patterns (weekend vs weekday). "
+    "Return a JSON object with keys: "
+    "  - 'patterns': list of 2-4 specific observed patterns as strings, "
+    "  - 'mood_factors': list of mood-affecting factors found in notes, "
+    "  - 'correlations': list of objects with 'factor' and 'impact' (positive/negative/mixed) keys. "
+    "If data is insufficient, return empty lists with an explanatory note."
+)
+
+WIND_DOWN_SYSTEM_PROMPT = (
+    "You are a sleep timing advisor. Based on the user's sleep history and target wake time, "
+    "predict the optimal wind-down (screen-off, lights-dim) time. "
+    "Consider how long it typically takes them to fall asleep based on bed-time vs quality patterns. "
+    "Return a JSON object with keys: "
+    "  - 'recommended_wind_down_time': HH:MM string, "
+    "  - 'reasoning': 1-2 sentence explanation. "
+    "If insufficient data, provide a reasonable default."
+)
+
+
+def analyze_trends(user):
+    """Analyze sleep data for trends, mood factors, and correlations."""
+    entries = list(
+        SleepEntry.objects.filter(user=user)
+        .order_by("-date")[:TREND_LOOKBACK_NIGHTS]
+    )
+
+    if len(entries) < MIN_NIGHTS_FOR_TRENDS:
+        return {
+            "patterns": [],
+            "mood_factors": [],
+            "correlations": [],
+            "note": f"Need at least {MIN_NIGHTS_FOR_TRENDS} nights of data. Currently have {len(entries)}.",
+        }
+
+    nights_text = ""
+    for e in reversed(entries):
+        notes_part = f", Notes: {e.notes}" if e.notes else ""
+        nights_text += (
+            f"- Date: {e.date} ({e.date.strftime('%A')}), "
+            f"Bed: {e.bed_time.strftime('%H:%M')}, Wake: {e.wake_time.strftime('%H:%M')}, "
+            f"Duration: {e.duration_hours}h, Quality: {e.quality}/5, "
+            f"Caffeine: {e.caffeine}, Exercise: {'yes' if e.exercise else 'no'}, "
+            f"Screen before bed: {'yes' if e.screen_time_before_bed else 'no'}"
+            f"{notes_part}\n"
+        )
+
+    api_key = settings.GROQ_API_KEY
+    if not api_key:
+        return {
+            "patterns": ["AI trend analysis requires GROQ_API_KEY."],
+            "mood_factors": [],
+            "correlations": [],
+        }
+
+    client = Groq(api_key=api_key)
+    response = client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {"role": "system", "content": TREND_SYSTEM_PROMPT},
+            {"role": "user", "content": f"Here are my recent nights:\n{nights_text}\nAnalyze my sleep trends."},
+        ],
+        max_tokens=512,
+        temperature=0.5,
+        response_format={"type": "json_object"},
+    )
+
+    import json
+    try:
+        result = json.loads(response.choices[0].message.content)
+    except (json.JSONDecodeError, KeyError):
+        result = {
+            "patterns": [response.choices[0].message.content],
+            "mood_factors": [],
+            "correlations": [],
+        }
+    return result
+
+
+def predict_wind_down(user):
+    """Predict optimal wind-down time based on sleep history and goals."""
+    entries = list(
+        SleepEntry.objects.filter(user=user)
+        .order_by("-date")[:14]
+    )
+    goal = SleepGoal.objects.filter(user=user).first()
+
+    if len(entries) < 3:
+        return {
+            "recommended_wind_down_time": "22:00",
+            "reasoning": "Not enough data yet. Using a default 9-hour-before-wake buffer. Log more nights for a personalized prediction.",
+        }
+
+    avg_quality_good = [e for e in entries if e.quality >= 4]
+    avg_bed_minutes = 0
+    if avg_quality_good:
+        for e in avg_quality_good:
+            bt = e.bed_time.time()
+            avg_bed_minutes += bt.hour * 60 + bt.minute
+        avg_bed_minutes = int(avg_bed_minutes / len(avg_quality_good))
+    else:
+        for e in entries:
+            bt = e.bed_time.time()
+            avg_bed_minutes += bt.hour * 60 + bt.minute
+        avg_bed_minutes = int(avg_bed_minutes / len(entries))
+
+    wind_down_minutes = avg_bed_minutes - 60
+    if wind_down_minutes < 0:
+        wind_down_minutes += 1440
+
+    wd_hour = (wind_down_minutes // 60) % 24
+    wd_minute = wind_down_minutes % 60
+    recommended = f"{wd_hour:02d}:{wd_minute:02d}"
+
+    target_wake = ""
+    if goal:
+        target_wake = goal.target_wake_time.strftime("%H:%M")
+
+    reasoning = (
+        f"Based on {len(avg_quality_good) if avg_quality_good else len(entries)} nights, "
+        f"your best sleep starts around {avg_bed_minutes // 60:02d}:{avg_bed_minutes % 60:02d}. "
+        f"Recommending 1-hour wind-down buffer."
+    )
+    if target_wake:
+        reasoning += f" Target wake: {target_wake}."
+
+    return {
+        "recommended_wind_down_time": recommended,
+        "reasoning": reasoning,
+    }

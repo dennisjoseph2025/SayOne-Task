@@ -98,6 +98,34 @@ class SleepEntryViewSet(viewsets.ModelViewSet):
             )
         return Response({"recommendation": recommendation})
 
+    @action(detail=False, methods=["get"])
+    def trends(self, request):
+        from .services import analyze_trends
+
+        try:
+            data = analyze_trends(request.user)
+        except Exception:
+            logger.exception("Error analyzing trends")
+            return Response(
+                {"detail": "Failed to analyze trends."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        return Response(data)
+
+    @action(detail=False, methods=["get"])
+    def wind_down(self, request):
+        from .services import predict_wind_down
+
+        try:
+            data = predict_wind_down(request.user)
+        except Exception:
+            logger.exception("Error predicting wind-down time")
+            return Response(
+                {"detail": "Failed to predict wind-down time."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        return Response(data)
+
 
 class SleepGoalViewSet(viewsets.ModelViewSet):
     serializer_class = SleepGoalSerializer
