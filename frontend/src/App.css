@@ -4,7 +4,9 @@
   align-items: center;
   padding: 0 2rem;
   height: 56px;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -13,48 +15,49 @@
 
 .navbar > a {
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--text-heading);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.15rem;
 }
 
 .nav-links a {
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-secondary);
-  padding: 0.35rem 0.6rem;
+  padding: 0.4rem 0.65rem;
   border-radius: 6px;
   transition: all 0.15s;
 }
 
 .nav-links a:hover {
-  color: var(--text-heading);
+  color: var(--accent);
   background: var(--accent-light);
 }
 
 .nav-user {
   font-size: 0.8rem;
   color: var(--text-secondary);
-  padding: 0 0.5rem;
+  padding: 0 0.6rem;
   margin-left: 0.5rem;
   border-left: 1px solid var(--border);
 }
 
 .nav-logout {
   font-size: 0.8rem;
-  padding: 0.35rem 0.6rem;
+  padding: 0.4rem 0.65rem;
   background: none;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
   border-radius: 6px;
   font-weight: 500;
+  transition: all 0.15s;
 }
 
 .nav-logout:hover {
@@ -102,7 +105,8 @@
   font-family: inherit;
   background: var(--surface);
   color: var(--text-heading);
-  transition: border-color 0.15s;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
 }
 
 .form input:focus,
@@ -110,7 +114,7 @@
 .form select:focus {
   outline: none;
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px var(--accent-light);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12), var(--shadow-sm);
 }
 
 .form button,
@@ -123,18 +127,28 @@ button.btn {
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(99, 102, 241, 0.3);
 }
 
 .form button:hover,
 button.btn:hover {
   background: var(--accent-hover);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
+}
+
+.form button:active,
+button.btn:active {
+  transform: translateY(0);
 }
 
 .form button:disabled,
 button.btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .checkbox-row {
@@ -152,8 +166,8 @@ button.btn:disabled {
 }
 
 .alert {
-  padding: 0.7rem 1rem;
-  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
   font-size: 0.85rem;
   margin-bottom: 1rem;
   background: var(--danger-light);
@@ -170,14 +184,21 @@ button.btn:disabled {
 .entry-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .entry-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 1rem 1.25rem;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.entry-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #d1d5db;
 }
 
 .entry-header {
@@ -196,6 +217,9 @@ button.btn:disabled {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--accent);
+  background: var(--accent-light);
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
 }
 
 .entry-meta {
@@ -203,7 +227,7 @@ button.btn:disabled {
   justify-content: space-between;
   font-size: 0.8rem;
   color: var(--text-secondary);
-  margin-top: 0.2rem;
+  margin-top: 0.3rem;
 }
 
 .entry-notes {
@@ -222,8 +246,9 @@ button.btn:disabled {
 .tag {
   font-size: 0.7rem;
   font-weight: 500;
-  padding: 0.15rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   background: var(--accent-light);
+  border: 1px solid var(--accent-border);
   border-radius: 99px;
   color: var(--accent);
 }
@@ -238,6 +263,7 @@ button.btn:disabled {
   color: var(--text-secondary);
   cursor: pointer;
   font-weight: 500;
+  transition: all 0.15s;
 }
 
 .delete-btn:hover {
@@ -259,58 +285,76 @@ button.btn:disabled {
 }
 
 .home-content h1 {
-  font-size: 2rem;
+  font-size: 2.25rem;
   margin-bottom: 0.5rem;
   letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--text-heading) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .home-tagline {
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: 1.05rem;
   margin-bottom: 2.5rem;
 }
 
 .home-features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
+  gap: 1rem;
   margin-bottom: 2.5rem;
   text-align: center;
 }
 
 .home-feature {
-  padding: 1.25rem 0.75rem;
+  padding: 1.5rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  transition: all 0.25s;
+}
+
+.home-feature:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--accent-border);
 }
 
 .home-feature-icon {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .home-feature h3 {
-  font-size: 0.85rem;
-  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
   color: var(--text-heading);
 }
 
 .home-feature p {
   font-size: 0.75rem;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .home-cta {
   display: inline-block;
-  padding: 0.7rem 2rem;
+  padding: 0.75rem 2.5rem;
   background: var(--accent);
   color: #fff;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: background 0.15s;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
 }
 
 .home-cta:hover {
   background: var(--accent-hover);
   color: #fff;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
 }

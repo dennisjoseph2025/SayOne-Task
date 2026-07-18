@@ -1,79 +1,68 @@
-.stats-grid {
+.stat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
-  margin: 1rem 0;
-}
-
-@media (max-width: 600px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  margin-bottom: 1.75rem;
 }
 
 .stat-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1rem;
+  border-radius: 12px;
+  padding: 1.1rem 1rem;
   text-align: center;
+  box-shadow: var(--shadow);
+  transition: all 0.25s;
 }
 
-.stat-value {
-  display: block;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text-heading);
-  letter-spacing: -0.02em;
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
-.stat-label {
-  display: block;
+.stat-card-label {
   font-size: 0.7rem;
-  color: var(--text-secondary);
-  margin-top: 0.15rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 500;
-}
-
-.best-worst {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin: 1.25rem 0;
-}
-
-.bw-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
-}
-
-.bw-card h3 {
-  margin: 0 0 0.5rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
 }
 
-.bw-card p {
-  margin: 0.15rem 0;
+.stat-card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   color: var(--text-heading);
-  font-size: 0.9rem;
 }
 
-.chart-container {
+.stat-card-value.accent {
+  color: var(--accent);
+}
+
+.stat-card-value.danger {
+  color: var(--danger);
+}
+
+.stat-card-value.success {
+  color: var(--success);
+}
+
+.chart-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 1.25rem;
-  margin: 0.75rem 0;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow);
 }
 
-.dashboard a {
-  color: var(--accent);
+.chart-card h2 {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 700px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

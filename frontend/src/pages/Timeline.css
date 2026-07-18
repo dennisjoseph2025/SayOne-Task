@@ -1,83 +1,66 @@
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.timeline-row {
-  display: grid;
-  grid-template-columns: 80px 1fr 100px;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.timeline-date {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.timeline-track {
-  height: 24px;
-  background: #f3f4f6;
-  border-radius: 6px;
-  position: relative;
-  overflow: hidden;
+  gap: 0.6rem;
 }
 
 .timeline-bar {
-  position: absolute;
-  top: 0;
-  height: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.85rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.timeline-bar:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #d1d5db;
+}
+
+.timeline-date {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 0.4rem;
+}
+
+.timeline-track {
+  position: relative;
+  height: 26px;
+  background: #f1f5f9;
   border-radius: 6px;
+  overflow: hidden;
+}
+
+.timeline-fill {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.timeline-fill.good {
+  background: linear-gradient(90deg, #34d399, #10b981);
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.25);
+}
+
+.timeline-fill.poor {
+  background: linear-gradient(90deg, #f87171, #ef4444);
+  box-shadow: 0 1px 4px rgba(239, 68, 68, 0.25);
+}
+
+.timeline-fill.fair {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.25);
+}
+
+.timeline-times {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-}
-
-.timeline-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.timeline-meta {
-  display: flex;
-  gap: 0.75rem;
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  font-variant-numeric: tabular-nums;
-}
-
-.tl-bed::before {
-  content: "IN ";
-  font-weight: 600;
-  font-size: 0.6rem;
-  letter-spacing: 0.04em;
-}
-.tl-wake::before {
-  content: "OUT ";
-  font-weight: 600;
-  font-size: 0.6rem;
-  letter-spacing: 0.04em;
-}
-
-.timeline-legend {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  justify-content: space-between;
+  margin-top: 0.3rem;
   font-size: 0.75rem;
   color: var(--text-secondary);
-}
-
-.timeline-legend i {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  margin-right: 3px;
-  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
 }

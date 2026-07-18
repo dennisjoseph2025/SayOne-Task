@@ -1,28 +1,18 @@
-.recommendations .subtitle {
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-}
-
-.rec-card {
-  margin-top: 1.5rem;
-  padding: 1.25rem;
+.recommendation-card {
+  background: linear-gradient(135deg, var(--accent-light) 0%, #faf5ff 100%);
   border: 1px solid var(--accent-border);
-  border-radius: 10px;
-  background: var(--accent-light);
-}
-
-.rec-card h3 {
-  margin: 0 0 0.75rem;
-  color: var(--accent);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 600;
-}
-
-.rec-card p {
-  color: var(--text);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
   line-height: 1.7;
+}
+
+.recommendation-card p {
+  margin: 0.5rem 0;
   font-size: 0.9rem;
+  color: var(--text);
+}
+
+.recommendation-card strong {
+  color: var(--text-heading);
 }
