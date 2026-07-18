@@ -1,6 +1,37 @@
 import { useEffect, useState } from "react";
 import api from "../api";
+import { QUALITY_COLORS, getPageNumbers } from "../utils";
 import "./Timeline.css";
+
+function SkeletonRow() {
+  return (
+    <div className="timeline-row">
+      <div className="skeleton" style={{ width: 100, height: 14, marginBottom: 10 }} />
+      <div className="skeleton" style={{ height: 28, borderRadius: 8 }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+        <div className="skeleton" style={{ width: 60, height: 12 }} />
+        <div className="skeleton" style={{ width: 60, height: 12 }} />
+      </div>
+    </div>
+  );
+}
+
+function Pagination({ page, totalPages, setPage }) {
+  const pages = getPageNumbers(page, totalPages);
+  return (
+    <div className="pagination">
+      <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} aria-label="Previous page">‹ Prev</button>
+      {pages.map((p, i) =>
+        p === "..." ? (
+          <span key={`e${i}`} className="pagination-ellipsis">…</span>
+        ) : (
+          <button key={p} className={p === page ? "active" : ""} onClick={() => setPage(p)}>{p}</button>
+        )
+      )}
+      <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)} aria-label="Next page">Next ›</button>
+    </div>
+  );
+}
 
 export default function Timeline() {
   const [entries, setEntries] = useState([]);
@@ -21,23 +52,38 @@ export default function Timeline() {
       .finally(() => setLoading(false));
   }, [page]);
 
-  if (loading) return <p className="page">Loading timeline...</p>;
+  if (loading) {
+    return (
+      <div className="page page-wide timeline-page">
+        <h1>Sleep Timeline</h1>
+        <div className="timeline">{[1,2,3].map((i) => <SkeletonRow key={i} />)}</div>
+      </div>
+    );
+  }
+
   if (entries.length === 0 && page === 1) return <p className="page">No entries yet.</p>;
+
+  const hours = ["6PM", "8PM", "10PM", "12AM", "2AM", "4AM", "6AM", "8AM", "10AM", "12PM"];
 
   return (
     <div className="page page-wide timeline-page">
       <h1>Sleep Timeline</h1>
+      <div className="timeline-axis">
+        {hours.map((h) => (
+          <span key={h} className="axis-label">{h}</span>
+        ))}
+      </div>
       <div className="timeline">
-        {entries.map((entry) => {
+        {entries.map((entry, i) => {
           const bed = new Date(entry.bed_time);
           const wake = new Date(entry.wake_time);
           const bedHour = bed.getHours() + bed.getMinutes() / 60;
           const left = ((bedHour + (bedHour < 12 ? 24 : 0) - 18) % 24) * (100 / 24);
           const width = entry.duration_hours * (100 / 24);
-          const qualityColors = ["", "#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6"];
+          const color = QUALITY_COLORS[entry.quality] || QUALITY_COLORS[3];
 
           return (
-            <div key={entry.id} className="timeline-row">
+            <div key={entry.id} className={`timeline-row animate-in`} style={{ animationDelay: `${i * 0.04}s` }}>
               <div className="timeline-date">{entry.date}</div>
               <div className="timeline-track">
                 <div
@@ -45,13 +91,11 @@ export default function Timeline() {
                   style={{
                     marginLeft: `${left}%`,
                     width: `${Math.min(width, 100 - left)}%`,
-                    backgroundColor: qualityColors[entry.quality],
+                    backgroundColor: color,
                   }}
                   title={`${entry.duration_hours}h — Quality: ${entry.quality}/5`}
                 >
-                  <span className="timeline-label">
-                    {entry.duration_hours}h
-                  </span>
+                  <span className="timeline-label">{entry.duration_hours}h</span>
                 </div>
               </div>
               <div className="timeline-meta">
@@ -63,36 +107,12 @@ export default function Timeline() {
         })}
       </div>
       <div className="timeline-legend">
-        <span><i style={{ backgroundColor: "#ef4444" }} /> 1</span>
-        <span><i style={{ backgroundColor: "#f97316" }} /> 2</span>
-        <span><i style={{ backgroundColor: "#eab308" }} /> 3</span>
-        <span><i style={{ backgroundColor: "#22c55e" }} /> 4</span>
-        <span><i style={{ backgroundColor: "#3b82f6" }} /> 5</span>
+        {[1,2,3,4,5].map((q) => (
+          <span key={q}><i style={{ backgroundColor: QUALITY_COLORS[q] }} /> {q}</span>
+        ))}
       </div>
-      {totalPages > 1 && (
-        <div className="pagination">
-          <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-            ‹ Prev
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button
-              key={p}
-              className={p === page ? "active" : ""}
-              onClick={() => setPage(p)}
-            >
-              {p}
-            </button>
-          ))}
-          <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
-            Next ›
-          </button>
-        </div>
-      )}
-      {count > 0 && (
-        <p className="pagination-info">
-          Page {page} of {totalPages} — {count} total entries
-        </p>
-      )}
+      {totalPages > 1 && <Pagination page={page} totalPages={totalPages} setPage={setPage} />}
+      {count > 0 && <p className="pagination-info">Page {page} of {totalPages} — {count} total entries</p>}
     </div>
   );
 }

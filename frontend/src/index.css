@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 :root {
   --bg: #f5f3ff;
@@ -16,11 +12,18 @@
   --border-light: #d0c6ed;
   --border-focus: #7c6bf0;
   --text: #3d3560;
-  --text-secondary: #6e6494;
+  --text-secondary: #5e5480;
   --text-heading: #1a1336;
   --text-bright: #0f0a24;
-  --accent: #7c6bf0;
-  --accent-hover: #6c5ce7;
+  --accent: #6c5ce7;
+  --accent-hover: #5b4bd5;
+  --primary: #6c5ce7;
+  --primary-hover: #5b4bd5;
+  --primary-subtle: rgba(108, 92, 231, 0.08);
+  --primary-border: rgba(108, 92, 231, 0.25);
+  --primary-glow: rgba(108, 92, 231, 0.18);
+  --green: #16a34a;
+  --font-heading: var(--font-family);
   --accent-glow: rgba(124, 107, 240, 0.18);
   --accent-light: rgba(124, 107, 240, 0.08);
   --accent-border: rgba(124, 107, 240, 0.25);
@@ -32,12 +35,31 @@
   --success-border: rgba(22, 163, 74, 0.25);
   --warning: #d97706;
   --warning-light: rgba(217, 119, 6, 0.08);
+  --quality-1: #e53e3e;
+  --quality-1-bg: rgba(229,62,62,0.1);
+  --quality-1-border: rgba(229,62,62,0.25);
+  --quality-2: #ea580c;
+  --quality-2-bg: rgba(234,88,12,0.1);
+  --quality-2-border: rgba(234,88,12,0.25);
+  --quality-3: #d97706;
+  --quality-3-bg: rgba(217,119,6,0.1);
+  --quality-3-border: rgba(217,119,6,0.25);
+  --quality-4: #16a34a;
+  --quality-4-bg: rgba(22,163,74,0.1);
+  --quality-4-border: rgba(22,163,74,0.25);
+  --quality-5: #2563eb;
+  --quality-5-bg: rgba(37,99,235,0.1);
+  --quality-5-border: rgba(37,99,235,0.25);
   --shadow-sm: 0 1px 2px rgba(90, 60, 150, 0.06);
   --shadow: 0 2px 8px rgba(90, 60, 150, 0.08);
   --shadow-md: 0 4px 16px rgba(90, 60, 150, 0.1);
   --shadow-glow: 0 0 24px rgba(124, 107, 240, 0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-family);
   font-size: 15px;
   line-height: 1.6;
   color: var(--text);
@@ -55,30 +77,48 @@ body {
   min-height: 100vh;
 }
 
-#root {
-  min-height: 100vh;
-}
+#root { min-height: 100vh; }
 
-h1, h2, h3 {
-  color: var(--text-heading);
-  font-weight: 700;
-  margin: 0;
-}
-
+h1, h2, h3 { color: var(--text-heading); font-weight: 700; margin: 0; }
 h1 { font-size: 1.6rem; letter-spacing: -0.035em; }
 h2 { font-size: 1.15rem; letter-spacing: -0.025em; }
 h3 { font-size: 0.9rem; font-weight: 600; }
 
-a {
-  color: var(--accent);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-a:hover {
-  color: var(--accent-hover);
+a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
+a:hover { color: var(--accent-hover); }
+
+::selection { background: rgba(124, 107, 240, 0.25); color: var(--text-heading); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
-::selection {
-  background: rgba(124, 107, 240, 0.25);
-  color: var(--text-heading);
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--surface-elevated) 50%, var(--bg-subtle) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.animate-in { animation: fadeInUp 0.35s ease-out both; }
+.animate-in-delay-1 { animation-delay: 0.05s; }
+.animate-in-delay-2 { animation-delay: 0.1s; }
+.animate-in-delay-3 { animation-delay: 0.15s; }
+.animate-in-delay-4 { animation-delay: 0.2s; }

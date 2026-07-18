@@ -1,102 +1,97 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Target, Loader2, Save } from "lucide-react";
 import api from "../api";
+import { useToast } from "../ToastContext";
 
 export default function GoalForm() {
-  const navigate = useNavigate();
-  const [goal, setGoal] = useState(null);
-  const [form, setForm] = useState({
-    target_bed_time: "23:00",
-    target_wake_time: "07:00",
-    target_duration_hours: "8",
-  });
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ target_sleep_hours: 8, target_bed_time: "22:00" });
+  const [streaks, setStreaks] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
-    api.get("/sleep-goals/").then((res) => {
-      if (res.data.length > 0) {
-        const g = res.data[0];
-        setGoal(g);
+    Promise.all([
+      api.get("/sleep-goals/current/").catch(() => ({ data: null })),
+      api.get("/sleep-goals/streak/").catch(() => ({ data: null })),
+    ]).then(([g, s]) => {
+      if (g.data && g.data.id) {
         setForm({
-          target_bed_time: g.target_bed_time,
-          target_wake_time: g.target_wake_time,
-          target_duration_hours: String(g.target_duration_hours),
+          target_sleep_hours: g.data.target_sleep_hours,
+          target_bed_time: g.data.target_bed_time,
         });
       }
-    }).catch(() => {});
+      setStreaks(s.data);
+      setLoading(false);
+    });
   }, []);
-
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
+    setSaving(true);
     try {
-      const payload = {
-        ...form,
-        target_duration_hours: parseFloat(form.target_duration_hours),
+      const goal = {
+        target_sleep_hours: Number(form.target_sleep_hours),
+        target_bed_time: form.target_bed_time,
       };
-      if (goal) {
-        await api.patch(`/sleep-goals/${goal.id}/`, payload);
-      } else {
-        await api.post("/sleep-goals/", payload);
-      }
-      navigate("/dashboard");
+      await api.post("/sleep-goals/", goal);
+      toast("Goal saved", "success");
     } catch (err) {
-      const data = err.response?.data;
-      if (data) {
-        const key = Object.keys(data)[0];
-        if (key) {
-          const val = data[key];
-          setError(Array.isArray(val) ? val[0] : val);
-        } else {
-          setError(data.detail || "Something went wrong.");
-        }
-      } else {
-        setError("Something went wrong.");
-      }
+      toast(err.response?.data?.detail || "Error saving goal", "error");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  const handleDelete = async () => {
-    if (!goal || !window.confirm("Delete your sleep goal?")) return;
-    await api.delete(`/sleep-goals/${goal.id}/`);
-    setGoal(null);
-    setForm({ target_bed_time: "23:00", target_wake_time: "07:00", target_duration_hours: "8" });
-  };
+  if (loading) {
+    return (
+      <div className="page">
+        <h1>Goal</h1>
+        <div className="skeleton" style={{ height: 200, borderRadius: 14 }} />
+      </div>
+    );
+  }
 
   return (
     <div className="page">
-      <h1>{goal ? "Edit Sleep Goal" : "Set Sleep Goal"}</h1>
-      {error && <div className="alert">{error}</div>}
-      <form onSubmit={handleSubmit} className="form">
-        <label>
-          Target Bed Time
-          <input type="time" name="target_bed_time" value={form.target_bed_time} onChange={handleChange} required />
-        </label>
-        <label>
-          Target Wake Time
-          <input type="time" name="target_wake_time" value={form.target_wake_time} onChange={handleChange} required />
-        </label>
-        <label>
-          Target Duration (hours)
-          <input type="number" name="target_duration_hours" min="1" max="12" step="0.5" value={form.target_duration_hours} onChange={handleChange} required />
-        </label>
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : goal ? "Update Goal" : "Create Goal"}
+      <form onSubmit={handleSubmit} className="form-card animate-in">
+        <h2><Target size={18} /> Sleep Goal</h2>
+
+        <div className="form-field">
+          <label htmlFor="target_sleep_hours">Target sleep (hours)</label>
+          <input
+            type="number"
+            id="target_sleep_hours"
+            min="1"
+            max="12"
+            step="0.5"
+            value={form.target_sleep_hours}
+            onChange={(e) => setForm({ ...form, target_sleep_hours: e.target.value })}
+          />
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="target_bed_time">Target bedtime</label>
+          <input
+            type="time"
+            id="target_bed_time"
+            value={form.target_bed_time}
+            onChange={(e) => setForm({ ...form, target_bed_time: e.target.value })}
+          />
+        </div>
+
+        <button type="submit" className="submit-btn" disabled={saving}>
+          {saving ? <><Loader2 size={16} className="spin" /> Saving…</> : <><Save size={16} /> Save Goal</>}
         </button>
-        {goal && (
-          <button type="button" className="delete-btn" onClick={handleDelete}>
-            Delete Goal
-          </button>
-        )}
       </form>
+
+      {streaks && streaks.current_streak_days !== undefined && (
+        <div className="insight-card animate-in animate-in-delay-1" style={{ marginTop: 24 }}>
+          <h3>Streaks</h3>
+          <p>Current: {streaks.current_streak_days} days · Longest: {streaks.longest_streak_days} days</p>
+          <p>This week: {streaks.weekly_score}% goal hit rate</p>
+        </div>
+      )}
     </div>
   );
 }

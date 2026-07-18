@@ -1,88 +1,74 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { Upload, FileCheck, Loader2 } from "lucide-react";
 import api from "../api";
+import { useToast } from "../ToastContext";
 
 export default function WearableImport() {
-  const fileRef = useRef(null);
-  const [importing, setImporting] = useState(false);
-  const [generating, setGenerating] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-  const [days, setDays] = useState(14);
+  const toast = useToast();
 
-  const handleFileImport = async () => {
-    const file = fileRef.current?.files?.[0];
+  const handleUpload = async (e) => {
+    const file = e.target.files?.[0];
     if (!file) return;
-    setImporting(true);
-    setResult(null);
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await api.post("/sleep-entries/import_wearable/", formData, {
+      const res = await api.post("/wearable-import/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setResult({ type: "import", ...res.data });
+      setResult(res.data);
+      toast(`Imported ${res.data.entries_imported || 0} entries`, "success");
     } catch (err) {
-      setResult({ type: "error", detail: err.response?.data?.detail || "Import failed." });
+      toast(err.response?.data?.detail || "Import failed", "error");
     } finally {
-      setImporting(false);
+      setLoading(false);
     }
   };
 
-  const handleMockGenerate = async () => {
-    setGenerating(true);
-    setResult(null);
+  const loadMockData = async () => {
+    setLoading(true);
     try {
-      const res = await api.post("/sleep-entries/mock_generate/", { days });
-      setResult({ type: "mock", ...res.data });
+      const res = await api.post("/wearable-import/mock-data/");
+      setResult(res.data);
+      toast(`Generated ${res.data.entries_imported || 0} mock entries`, "success");
     } catch (err) {
-      setResult({ type: "error", detail: err.response?.data?.detail || "Generation failed." });
+      toast(err.response?.data?.detail || "Failed to load mock data", "error");
     } finally {
-      setGenerating(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="page">
-      <h1>Wearable Data Import</h1>
+    <div className="page import-page">
+      <h1>Import Sleep Data</h1>
 
-      <section style={{ marginBottom: "2rem" }}>
-        <h2>Upload File</h2>
-        <p style={{ color: "var(--text)", fontSize: "0.9rem", marginBottom: "0.75rem" }}>
-          Import sleep data from a wearable device. Accepts CSV or JSON files with fields:
-          <code> date, bed_time, wake_time, quality, caffeine, exercise, screen_time_before_bed, notes</code>
-        </p>
-        <div className="form">
-          <input type="file" ref={fileRef} accept=".csv,.json" />
-          <button type="button" onClick={handleFileImport} disabled={importing}>
-            {importing ? "Importing..." : "Import File"}
-          </button>
-        </div>
-      </section>
-
-      <section>
-        <h2>Generate Mock Data</h2>
-        <p style={{ color: "var(--text)", fontSize: "0.9rem", marginBottom: "0.75rem" }}>
-          Generate realistic mock wearable sleep data for demo purposes.
-        </p>
-        <div className="form" style={{ maxWidth: 320 }}>
-          <label>
-            Number of days
-            <input type="number" min="1" max="90" value={days} onChange={(e) => setDays(Number(e.target.value))} />
+      <div className="import-actions animate-in">
+        <div className="import-card">
+          <h3>Upload File</h3>
+          <p>Import CSV or JSON sleep data from your wearable device</p>
+          <label className="upload-btn">
+            <input type="file" accept=".csv,.json" onChange={handleUpload} hidden disabled={loading} />
+            {loading ? <Loader2 size={16} className="spin" /> : <Upload size={16} />}
+            Choose File
           </label>
-          <button type="button" onClick={handleMockGenerate} disabled={generating}>
-            {generating ? "Generating..." : "Generate Mock Data"}
+        </div>
+
+        <div className="import-card">
+          <h3>Load Sample Data</h3>
+          <p>Try the app with 30 days of realistic mock sleep data</p>
+          <button className="mock-btn" onClick={loadMockData} disabled={loading}>
+            {loading ? <Loader2 size={16} className="spin" /> : <FileCheck size={16} />}
+            Load Mock Data
           </button>
         </div>
-      </section>
+      </div>
 
       {result && (
-        <div className={`alert ${result.type === "error" ? "" : "alert-success"}`} style={{ marginTop: "1rem" }}>
-          {result.type === "error" && result.detail}
-          {result.type === "import" && (
-            <span>Imported {result.imported} entries, skipped {result.skipped}{result.errors?.length > 0 ? ` (${result.errors.length} errors)` : ""}</span>
-          )}
-          {result.type === "mock" && (
-            <span>Generated {result.created} entries over {result.total_days} days.</span>
-          )}
+        <div className="import-result animate-in">
+          <h3>Import Complete</h3>
+          <p>Entries imported: <strong>{result.entries_imported ?? 0}</strong></p>
         </div>
       )}
     </div>

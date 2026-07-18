@@ -181,7 +181,7 @@ def generate_recommendation(user):
 
     client = Groq(api_key=api_key)
     response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_message},
@@ -257,7 +257,7 @@ def analyze_trends(user):
 
     client = Groq(api_key=api_key)
     response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": TREND_SYSTEM_PROMPT},
             {"role": "user", "content": f"Here are my recent nights:\n{nights_text}\nAnalyze my sleep trends."},
